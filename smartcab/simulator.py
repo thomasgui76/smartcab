@@ -34,7 +34,7 @@ class Simulator(object):
         'gray'    : (155, 155, 155)
     }
 
-    def __init__(self, env, size=None, update_delay=2.0, display=True, log_metrics=False, optimized=False):
+    def __init__(self, env, size=None, update_delay=0.01, display=False, log_metrics=True, optimized=True):
         self.env = env
         self.size = size if size is not None else ((self.env.grid_size[0] + 1) * self.env.block_size, (self.env.grid_size[1] + 2) * self.env.block_size)
         self.width, self.height = self.size
@@ -88,6 +88,7 @@ class Simulator(object):
         self.optimized = optimized
         
         if self.log_metrics:
+            print "log_metrics = True"   # new added code to track log_metrics value
             a = self.env.primary_agent
 
             # Set log files
@@ -107,8 +108,10 @@ class Simulator(object):
             self.log_file = open(self.log_filename, 'wb')
             self.log_writer = csv.DictWriter(self.log_file, fieldnames=self.log_fields)
             self.log_writer.writeheader()
+        else:
+            print "log_metrics value not set to True"    # track log_metrics value
 
-    def run(self, tolerance=0.05, n_test=0):
+    def run(self, tolerance=0.02, n_test=20):
         """ Run a simulation of the environment. 
 
         'tolerance' is the minimum epsilon necessary to begin testing (if enabled)
@@ -227,7 +230,7 @@ class Simulator(object):
         # Clean up
         if self.log_metrics:
 
-            if a.learning:
+            if a.learning: 
                 f = self.table_file
                 
                 f.write("/-----------------------------------------\n")
@@ -252,8 +255,9 @@ class Simulator(object):
     def render_text(self, trial, testing=False):
         """ This is the non-GUI render display of the simulation. 
             Simulated trial data will be rendered in the terminal/command prompt. """
-
+        
         status = self.env.step_data
+        
         if status and status['waypoint'] is not None: # Continuing the trial
 
             # Previous State
