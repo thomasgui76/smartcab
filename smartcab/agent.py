@@ -9,7 +9,7 @@ class LearningAgent(Agent):
     """ An agent that learns to drive in the Smartcab world.
         This is the object you will be modifying. """ 
 
-    def __init__(self, env, learning=True, epsilon=1.0, alpha=0.2):
+    def __init__(self, env, learning=True, epsilon=1.0, alpha=0.5):
         super(LearningAgent, self).__init__(env)     # Set the agent in the evironment 
         self.planner = RoutePlanner(self.env, self)  # Create a route planner
         self.valid_actions = self.env.valid_actions  # The set of valid actions
@@ -46,11 +46,12 @@ class LearningAgent(Agent):
             self.epsilon = 0
             self.alpha = 0
         else:
-            #self.epsilon-=0.05
-            #self.alpha-=0.001
-            self.epsilon=math.exp(-0.01*self.trial_num)
+            # self.epsilon-=0.05
+            # self.alpha = 0.2
+            self.epsilon=math.exp(-self.alpha*0.01*self.trial_num)
             self.trial_num+=1
-        return
+        
+        return None
 
     def build_state(self):
         """ The build_state function is called when the agent requests data from the 
@@ -101,8 +102,9 @@ class LearningAgent(Agent):
             if not state in self.Q.keys():
                 self.Q[state]={None:0.0,'forward':0.0,'left':0.0,'right':0.0}
                 
-        return self.Q
-
+        # return self.Q
+        
+        return
 
     def choose_action(self, state):
         """ The choose_action function is called when the agent is asked to choose
@@ -111,6 +113,7 @@ class LearningAgent(Agent):
         # Set the agent state and default action
         self.state = state
         self.next_waypoint = self.planner.next_waypoint()
+        # action = None
         
         ########### 
         ## TO DO ##
@@ -150,7 +153,6 @@ class LearningAgent(Agent):
             
         return
 
-
     def update(self):
         """ The update function is called when a time step is completed in the 
             environment for a given trial. This function will build the agent
@@ -164,7 +166,6 @@ class LearningAgent(Agent):
 
         return
         
-
 def run():
     """ Driving function for running the simulation. 
         Press ESC to close the simulation, or [SPACE] to pause the simulation. """

@@ -1,4 +1,4 @@
-###########################################
+ ###########################################
 # Suppress matplotlib user warnings
 # Necessary for newer version of matplotlib
 import warnings
@@ -34,7 +34,7 @@ class Simulator(object):
         'gray'    : (155, 155, 155)
     }
 
-    def __init__(self, env, size=None, update_delay=0.01, display=False, log_metrics=True, optimized=True):
+    def __init__(self, env, size=None, update_delay=0.1, display=True, log_metrics=True, optimized=True):
         self.env = env
         self.size = size if size is not None else ((self.env.grid_size[0] + 1) * self.env.block_size, (self.env.grid_size[1] + 2) * self.env.block_size)
         self.width, self.height = self.size
@@ -111,7 +111,7 @@ class Simulator(object):
         else:
             print "log_metrics value not set to True"    # track log_metrics value
 
-    def run(self, tolerance=0.02, n_test=20):
+    def run(self, tolerance=0.005, n_test=20):
         """ Run a simulation of the environment. 
 
         'tolerance' is the minimum epsilon necessary to begin testing (if enabled)
