@@ -13153,7 +13153,8 @@ zMzMasQJlpmZmZmZWY04wTIzMzMzM6sRJ1hmZmZmZmY18v8BAjHjtVrYBggAAAAASUVORK5CYII=
 <p><strong>回答：</strong> 
 代理程序的waypoint（智能出租车朝哪个方向开）与学习效率相关性最高，因为选择路径会影响到达时间；<br>
 inputs（信号灯，交叉路口其它车辆的朝向）与学习安全性相关性最高，如果忽略这些特征的状态，会造成车辆违规和交通事故；<br>
-没有选择deadline特征，   因为deadline和学习安全性不相关，且最终对学习效率没有影响；只要路径规划经过学习优化后可以在deadline(初始值是起点到终点经过的路口数的5倍，智能出租车每次动作后减1）为0前达到目的地就可以了。</p>
+没有选择deadline特征，   因为deadline和学习安全性不相关，且最终对学习效率没有影响；只要路径规划经过学习优化后可以在deadline(初始值是起点到终点经过的路口数的5倍，智能出租车每次动作后减1）为0前达到目的地就可以了。<br>
+另外环境的特点是，智能车的起始位置和终点位置是随机的。deadline 初始值也是随机的，不具一般性。对智能车来说，每次训练deadline初始值是不同的，取值范围5-5倍（终点-起点）距离。如果把deadline 作为特征，每次训练的状态空间的数目就是随机的。Q-table item也是随机的，就没办法随着训练次数增加，有效更新Q-table的值。</p>
 
 </div>
 </div>
@@ -16472,10 +16473,9 @@ JUmSJEkDscCSJEmSpIH8G2n1GzeKNeUAAAAAAElFTkSuQmCC
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>回答：</strong></p>
 <ol>
-<li>假定a = 0.5, ϵ= a <strong> t, ϵ=1/(t </strong>2) 衰减太快，第20轮之后ϵ已经接近tolerance 停止训练，而ϵ=cos(a <em> t)是周期函数，180轮ϵ 就为0，以720为周期震荡；<br>
-所以我用 ϵ=e−(0.01</em>a*t), for 0 &lt; a &lt; 1 的衰减函数，ϵ值逐渐缓慢衰减。      </li>
+<li>假定a = 0.5, ϵ= a <strong> t, ϵ=1/(t </strong>2) 衰减太快，第20轮之后ϵ已经接近tolerance 停止训练，而ϵ=cos(a <em> t)是周期函数，180轮ϵ 就为0，以720为周期震荡；所以我用 ϵ=e−(0.01</em>a*t), for 0 &lt; a &lt; 1 的衰减函数，ϵ值逐渐缓慢衰减。      </li>
 <li>测试之前驾驶代理做1000+次训练。</li>
-<li>epsilon-tolerance值：0.005, alpha（学习率）值：0.5。epsilon 衰减函数的系数越小，epsilon下降就越慢，epsilon-tolerance值越小，下降到阈值前的训练次数就越多。alpha 学习率选择在当前reward 和 上次Q-value 之间折衷。alpha 值大，倾向学习现在环境的影响，忽略过去积累的经验。</li>
+<li>epsilon-tolerance值：0.005, alpha（学习率）值：0.5。epsilon 是探索因子，作用是以ϵ 概率随机选择action. 初始值为1.0，衰减到epsilon-tolerance值以下就停止训练。衰减函数的系数越小，epsilon下降就越慢，epsilon-tolerance值越小，下降到阈值前的训练次数就越多。alpha 学习率选择在当前reward 和 上次Q-value 之间折衷。alpha 值大，倾向学习现在环境的影响，忽略过去积累的经验。</li>
 <li>与之前的默认Q-Learning学习器相比，这个Q-Learning学习器 有很大改进，安全性评分A+, 可靠性评分A。</li>
 <li>Q-Learning学习器的结果表明了我的驾驶代理程序成功地学习了一个合适的策略。</li>
 <li>对智能出租车经过训练后达到的的安全性A+和可靠性A评分满意。</li>
@@ -16518,13 +16518,7 @@ JUmSJEkDscCSJEmSpIH8G2n1GzeKNeUAAAAAAElFTkSuQmCC
  -- right : 0.37
  -- None : 0.00
  -- left : -20.32
- 上面的数据表示：智能车要左拐，遇到红灯，左边路口车要右转，右边路口车要右拐，对面路口的车要左拐；最优策略是右转，奖励是（1，2）之间的正值；直行，等待没有违反交通规则，奖励是（0，1）的正值；而左拐则会发生严重事故，奖励是-40。</p>
-<p>('forward', 'green', 'right', 'right', None)
- -- forward : 1.52
- -- right : 0.00
- -- None : -2.37
- -- left : 0.00
-上面的数据表示：智能车要直行，遇到绿灯，左边路口车要右转，右边路口车要右转，对面没有车；最优策略是直行，奖励是（1，2）之间的正值；左转，右转没有违反交通规则，奖励是（0，1）的正值；而原地等待属于轻微违规，奖励是-5。</p>
+ 上面的数据表示：智能车要左拐，遇到红灯，左边路口车要右转，右边路口车要右拐，对面路口的车要左拐；最优策略是右转，Q-value值是0.37 将会得到最高的奖励；直行，等待没有违反交通规则，Q-value值是0.0，将会得到低于直行的奖励值；而左拐则会发生严重事故，Q-value值是-20.32，将会得到负的奖励值。</p>
 
 </div>
 </div>
